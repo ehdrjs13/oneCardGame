@@ -47,7 +47,7 @@ class Game:
             suit = self.autoChoice(player)
         
         else: 
-            suit = input("Which Suit Do you Choose?")
+            suit = int(input("Which Suit Do you Choose?"))
 
 
         self.top = (suit,11)
@@ -57,17 +57,17 @@ class Game:
     
     @staticmethod
     def autoChoice(player:Player) -> int:
-        values = [card[1] for card in player.hand]
+        suits = [card[0] for card in player.hand]
         count = [0,0,0,0]
-        for i in values:
+        for i in suits:
             count[i] += 1
-        max = max(values)
-        idx = values.index(max)
+        maxSuit = max(suits)
+        idx = suits.index(maxSuit)
         
         candidates = [idx]
 
-        for k in range(count):
-            if count[k] == max:
+        for k in range(len(count)):
+            if count[k] == maxSuit:
                 candidates.append(k)        
   
         return random.choice(candidates)
@@ -84,7 +84,7 @@ class Game:
 def make_deck():
     deck = []
     for suit in range(4):
-        for value in range(11):
+        for value in range(12):
             deck.append((suit,value))
 
     random.shuffle(deck)
@@ -158,6 +158,10 @@ def play_user_turn(game:Game,user:Player):
     
     else:   
         command = int(input(f"Enter card index (0–{len(user.hand)}) or q (quit):"))
+        if not command.isdigit():
+            print("Invalid input...")
+            return
+        
         if command == "q":
             quit()
 
@@ -172,7 +176,9 @@ def play_user_turn(game:Game,user:Player):
             if user.hand[command][1] == 10:
                 game.top = user.hand.pop(int(command))
             elif user.hand[command][1] == 11:
-                game.wild()
+                user.hand.pop(int(command))
+                game.wild(False,user)
+                game.turn = not game.turn
             else:
                 game.top = user.hand.pop(int(command))
                 game.turn = not game.turn
@@ -211,7 +217,9 @@ def play_computer_turn(game:Game,computer:Player) -> None:
         if computer.hand[command][1] == 10:
             game.top = computer.hand.pop(int(command))
         if computer.hand[command][1] == 11: #낸 카드가 wildcard면
-            game.wild()
+            computer.hand.pop(int(command))
+            game.wild(True,computer)
+            game.turn = not game.turn
         else:
             game.top = computer.hand.pop(int(command))
             game.turn = not game.turn
