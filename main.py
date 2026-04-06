@@ -47,7 +47,7 @@ class Game:
             suit = self.autoChoice(player)
         
         else: 
-            suit = int(input("Which Suit Do you Choose?"))
+            suit = int(input("Which Suit Do you Choose? 0:♡ 1:♠ 2:◇ 3:3"))
 
 
         self.top = (suit,11)
