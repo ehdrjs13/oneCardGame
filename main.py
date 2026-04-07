@@ -1,8 +1,5 @@
 import random
 
-#남은 할 일,, 
-# 디버그하기, 
-
 class Player:
     def __init__(self) -> None:
         self.hand = []
@@ -47,7 +44,14 @@ class Game:
             suit = self.autoChoice(player)
         
         else: 
-            suit = int(input("Which Suit Do you Choose? 0:♡ 1:♠ 2:◇ 3:3"))
+            while True:
+                suit = input("Which Suit Do you Choose? 0:♡ 1:♠ 2:◇ 3:3")
+                if not suit.isdigit():
+                    print("Not Valid Input. ")
+                suit = int(suit)
+                
+                break
+                
 
 
         self.top = (suit,11)
@@ -74,6 +78,7 @@ class Game:
     
     
     def draw(self):
+
         
         return self.Deck.pop()
     
@@ -108,14 +113,21 @@ def show_game_state(game:Game) -> None:
     return 
 
 def suitFormater(card:tuple) -> str:
+    if card[1] == 10:
+        value = "S"
+    elif card[1] ==11:
+        value = "W"
+    else:
+        value = card[1]
     if card[0] == 0:
-        return f"♡ {card[1]}"
+        return f"♡ {value}"
     elif card[0] == 1:
-        return f"♠ {card[1]}"
+        return f"♠ {value}"
     elif card[0] == 2:
-        return f"◇ {card[1]}"
+        return f"◇ {value}"
     elif card[0] == 3:
-        return f"♣ {card[1]}"
+        return f"♣ {value}"
+    
     return 
 
 def show_player_hand(player:Player):
@@ -132,7 +144,7 @@ def is_playable_card(card:tuple,reference:tuple):
     return False
 
 def is_valid_card_index(player:Player,input):
-    if len(player.hand) < input:
+    if len(player.hand)-1 < input:
         return False
     return True
 
@@ -157,19 +169,22 @@ def play_user_turn(game:Game,user:Player):
     
     
     else:   
-        command = int(input(f"Enter card index (0–{len(user.hand)}) or q (quit):"))
-        if not command.isdigit():
-            print("Invalid input...")
-            return
+        command = (input(f"Enter card index (0–{len(user.hand)}) or q (quit):"))
         
         if command == "q":
             quit()
+        
+        if not command.isdigit():
+            print("Invalid input...")
+            return
 
-        elif not is_valid_card_index(user,command):
+        command = int(command)
+
+        if not is_valid_card_index(user,command):
             print("Not Valid Index. Try again. ")
             return
 
-        elif not is_playable_card(user.hand[int(command)],game.top):
+        if not is_playable_card(user.hand[int(command)],game.top):
             print("이카드안됨")
         
         else:
@@ -290,7 +305,13 @@ def main() -> None:
     make_initial_card(game.Deck,computer)
     game.makeTopCard()
     print("Welcome to One card Game! Select Game Mode. (Play Mode:0 Debug Mode:1)")
-    game.mode = int(input("Enter GameMode:")) == 1
+    while True:
+        modeIdx = input("Enter GameMode:")
+        if not modeIdx.isdigit():
+            print("Not Valid Input. ")
+        else:
+            game.mode = int(modeIdx) == 1
+            break
 
     while True:
         if len(game.Deck) == 0:
